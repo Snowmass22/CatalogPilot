@@ -7,6 +7,7 @@ from app.api.attributes import router as attributes_router
 from app.api.categories import router as categories_router
 from app.api.imports import router as imports_router
 from app.api.products import router as products_router
+from app.api.sync import router as sync_router
 from app.db.session import get_session
 from app.domain.schemas import CatalogHealthSummary
 from app.services.health_service import HealthService
@@ -17,6 +18,7 @@ api_router.include_router(products_router)
 api_router.include_router(categories_router)
 api_router.include_router(attributes_router)
 api_router.include_router(imports_router)
+api_router.include_router(sync_router)
 
 
 @api_router.get("/health", response_model=CatalogHealthSummary, tags=["Health"])

@@ -5,6 +5,7 @@ from app.services.category_service import CategoryService
 from app.services.health_service import HealthService
 from app.services.import_service import ImportService
 from app.services.product_service import ProductService
+from app.services.sync_service import SyncService
 
 __all__ = [
     "AttributeService",
@@ -12,4 +13,5 @@ __all__ = [
     "HealthService",
     "ImportService",
     "ProductService",
+    "SyncService",
 ]

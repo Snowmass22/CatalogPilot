@@ -22,30 +22,27 @@ def test_preview_messy_supplier_csv(client: TestClient) -> None:
 
     assert data["total_rows"] == 30
     mapping = data["mapping"]
-    assert mapping["sku_column"] == "Item_Ref"
-    assert mapping["name_column"] == "Prod_Title"
-    assert mapping["price_column"] == "MSRP"
-    assert mapping["stock_column"] == "Qty_Avail"
+    assert mapping["sku_column"] == "Item Code"
+    assert mapping["name_column"] == "Prod Name"
+    assert mapping["price_column"] == "MRP (Rs)"
+    assert mapping["stock_column"] == "Qty"
     assert mapping["attribute_columns"]["Clr"] == "Color"
     assert mapping["attribute_columns"]["Sz"] == "Size"
 
     # Duplicates in file
-    assert "SUP-HOOD-001" in data["duplicate_skus_in_file"]
-    assert "SUP-TEE-003" in data["duplicate_skus_in_file"]
+    assert "HD-001" in data["duplicate_skus_in_file"]
 
     # Check preview items
     first_item = data["preview_items"][0]
-    assert first_item["sku"] == "SUP-HOOD-001"
-    assert first_item["price"] == 65.0
-    assert first_item["stock"] == 40
+    assert first_item["sku"] == "HD-001"
+    assert first_item["price"] == 1499.0
+    assert first_item["stock"] == 14
     # Normalized attributes
     assert first_item["attributes"]["Color"] == "Black"  # "blk" normalized to "Black"
     assert first_item["attributes"]["Size"] == "XL"  # "x-large" normalized to "XL"
 
-    # Row with $1,299.00 price should be parsed to 1299.0 with issue chip
-    expensive_item = next(item for item in data["preview_items"] if item["sku"] == "SUP-HOOD-004")
-    assert expensive_item["price"] == 1299.0
-    assert any("High price" in issue for issue in expensive_item["issues"])
+    # Row with high price > $1,000 has issue chip
+    assert any("High price" in issue for issue in first_item["issues"])
 
 
 def test_preview_empty_csv_bad_request(client: TestClient) -> None:

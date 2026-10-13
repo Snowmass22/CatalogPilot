@@ -136,7 +136,7 @@ Return a JSON matching MapperResult schema with:
             find_col(["prod_title", "title", "product_name", "item_name", "name"]) or headers[1]
         )
         desc_col = find_col(["details", "description", "desc", "about"])
-        price_col = find_col(["msrp", "price", "retail", "cost"]) or (
+        price_col = find_col(["mrp", "msrp", "price", "retail", "cost"]) or (
             headers[3] if len(headers) > 3 else headers[0]
         )
         stock_col = find_col(["qty_avail", "qty", "stock", "quantity", "avail", "count"]) or (

@@ -1,7 +1,7 @@
 """Pydantic schemas for API requests, responses, and domain validation."""
 
 from datetime import datetime
-from typing import Literal
+from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -270,3 +270,45 @@ class CatalogHealthSummary(BaseModel):
     score_distribution: ScoreDistribution
     top_issues: list[IssueCount]
     advice_summary: str | None = None
+
+
+# --- Sync & Time Machine Schemas (PRD Pillar C, ADR-0006) ---
+class SyncItemRead(BaseModel):
+    """Individual action item inside a sync plan."""
+
+    id: int
+    product_id: int
+    action: str
+    diff: dict[str, Any] = Field(default_factory=dict)
+    status: str
+    error: str | None = None
+
+
+class SyncPlanRead(BaseModel):
+    """Sync plan representation with field-level diffs."""
+
+    id: int
+    created_at: datetime
+    summary: dict[str, Any] = Field(default_factory=dict)
+    status: str
+    items: list[SyncItemRead] = Field(default_factory=list)
+
+
+class SyncRunRead(BaseModel):
+    """Sync execution run record."""
+
+    id: int
+    plan_id: int
+    started_at: datetime
+    finished_at: datetime | None = None
+    status: str
+    snapshots_count: int = 0
+
+
+class RollbackResponse(BaseModel):
+    """Rollback execution response."""
+
+    run_id: int
+    status: str
+    restored_items: int
+    details: str

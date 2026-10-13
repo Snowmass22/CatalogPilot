@@ -1,31 +1,31 @@
-Item_Ref,Prod_Title,Details,MSRP,Qty_Avail,Clr,Sz,Material_Type,Cat_Name
-SUP-HOOD-001,Vintage Heavyweight Fleece Hoodie,Ultra soft brushed fleece with front pocket,$65.00,40,blk,x-large,Cotton Fleece,Hoodies
-SUP-HOOD-001,Vintage Heavyweight Fleece Hoodie (Restock),Updated batch of our bestseller,$65.00,15,Black,XL,Cotton Fleece,Hoodies
-SUP-HOOD-002,Streetwear Zip-Up Hooded Jacket,Antique brass zipper with ribbed cuffs,$74.50,25,Heather Grey,med,Cotton Blend,Hoodies
-SUP-HOOD-003,Relaxed Drop Shoulder Pullover,,$58.00,30,burgundy,XX-Large,Polyester / Cotton,Hoodies
-SUP-HOOD-004,Acid Wash Distress Hoodie,Mineral wash vintage look and feel,"$1,299.00",5,Olive Drab,L,Fleece,Hoodies
-SUP-TEE-001,Classic Organic Crew Tee,100% organic combed ring-spun cotton,$28.00,100,wht,sml,100% Cotton,T-Shirts
-SUP-TEE-001,Classic Organic Crew Tee (Duplicate),,,100,White,Small,Cotton,T-Shirts
-SUP-TEE-002,Boxy Heavy Streetwear Tee,Thick 240 GSM drop shoulder tee,$34.00,80,NAV,L,Heavy Cotton,T-Shirts
-SUP-TEE-003,Pocket Detail Daily T-Shirt,Chest pocket with contrast stitching,$32.50,60,blk,MEDIUM,Cotton,T-Shirts
-SUP-TEE-003,Pocket Detail Daily T-Shirt,Duplicate record with different qty,$32.50,15,Black,M,Cotton,T-Shirts
-SUP-TEE-004,Vintage Band Wash Graphic Tee,Faded graphic screen printed on washed fabric,$36.00,45,Heather Grey,XL,Cotton,T-Shirts
-SUP-TEE-005,Minimalist Embroidered Tee,,$30.00,50,wht,2XL,Cotton,T-Shirts
-SUP-TEE-006,Oversized Skate Tee,Loose fit skater tee with thick collar,$35.00,70,Olive,x-large,Cotton,T-Shirts
-SUP-ACC-001,Roll-Top Urban Commuter Backpack,Weatherproof 24L laptop daypack,$89.00,20,blk,,Cordura Nylon,Accessories
-SUP-ACC-002,Heavyweight Utility Tote Bag,Reinforced 16oz canvas with inner keyclip,$24.00,50,Navy Blue,,Canvas,Accessories
-SUP-ACC-003,Chunky Knit Fisherman Beanie,100% merino wool warm winter beanie,$22.00,65,blk,One Size,Merino Wool,Accessories
-SUP-ACC-004,Unstructured Waxed Snapback Cap,Water resistant 6-panel strapback,$29.50,35,Olive Drab,,Waxed Cotton,Accessories
-SUP-ACC-005,Minimalist Leather Card Holder,Full grain vegetable tanned leather wallet,$38.00,40,Brown,,Genuine Leather,Accessories
-SUP-HOOD-005,Thermal Sherpa Lined Full-Zip,Heavy winter hoodie lined with sherpa,$85.00,18,Navy,sml,Sherpa / Cotton,Hoodies
-SUP-HOOD-006,Cropped Boxy Fleece Hoodie,Modern boxy cropped cut hoodie,$62.00,22,wht,Small,Cotton,Hoodies
-SUP-TEE-007,Slub Cotton Textured Tee,Lightweight slub yarn casual tee,$26.00,90,Navy,S,Slub Cotton,T-Shirts
-SUP-TEE-008,Raw Edge Muscle Tank,,$24.00,35,blk,L,Jersey Cotton,T-Shirts
-SUP-HOOD-007,Garment Dyed French Terry Hoodie,Pre-shrunk soft loopback french terry,$68.00,30,burgundy,med,French Terry,Hoodies
-SUP-ACC-006,Reflective Cycling Messenger Bag,Crossbody commuter bag with reflective stripe,$78.00,15,blk,,Nylon,Accessories
-SUP-ACC-007,Ribbed Cashmere Blend Scarf,,$45.00,25,Heather Grey,One Size,Cashmere Blend,Accessories
-SUP-TEE-009,Long Sleeve Heavyweight Thermal,Waffle knit base layer shirt,$38.00,40,White,XL,Waffle Knit,T-Shirts
-SUP-TEE-010,Vintage Dye Ringer Tee,Contrast ribbed collar and sleeves,$29.00,55,Navy Blue,M,Cotton Blend,T-Shirts
-SUP-HOOD-008,Colorblock Technical Pullover,Wind resistant nylon paneling with fleece,$72.00,20,blk,x-large,Nylon / Fleece,Hoodies
-SUP-ACC-008,Braided Leather Keychain,Brass hardware with hand-stitched leather,$18.00,80,Brown,,Leather,Accessories
-SUP-HOOD-009,Heavyweight Mountain Parka Hoodie,Extreme cold weather hooded outerwear,"$1,299.00",8,blk,2XL,Technical Fleece,Hoodies
+Prod Name,Item Code,MRP (Rs),Qty,Clr,Sz,Cat.,Desc
+Classic Pullover Hoodie,HD-001,1499,14,blk,x-large,hoodies,
+cotton crew tee white,TS-001,Rs. 599/-,40,WHT,S,T-shirts,Soft 100% cotton crew neck tee
+Zip Hoodie Charcoal,HD-002,₹1799,6,chrcl,med,Hoodies,Full zip hoodie
+Slim Fit Jeans Indigo,JN-001,2199.00,18,indigo,,denim,
+Graphic Tee Midnight,TS-002,Rs. 799/-,22,Midnight,L,T-Shirts,Printed graphic tee
+classic pullover hoodie,HD-001,"Rs. 1,499",14,BLK,L,Hoodies,
+Baseball Cap Black,CP-001,399,100,blk,Free,accessories,Adjustable cotton cap
+Striped Tee Navy,TS-003,699,26,navy,med,T-Shirts,"Navy striped tee, regular fit"
+Bomber Jacket Olive,JK-001,"3,499",6,olv,M,jackets,
+Oversized Hoodie,HD-003,1899,0,Grey,XL,Hoodies,Oversized fit
+Cotton Crew Tee White,TS-001,599,40,white,M,T-Shirts,Soft 100% cotton crew neck tee
+Relaxed Jeans Washed,JN-002,"Rs. 2,399/-",11,washed,32,Denim,Relaxed
+zip hoodie charcoal,HD-002,1799.00,6,Chrcl,L,Hoodies,Full zip hoodie
+Fleece Hoodie Maroon,HD-004,1299,15,maroon,L,Hoodies,Warm fleece hoodie
+Graphic Tee Midnight,TS-002,799,21,midnight,x-large,T-shirts,Printed graphic tee
+Windcheater Black,JK-002,Rs.2999/-,3,blk,M,Jackets,
+Classic Pullover Hoodie,HD-001,"₹1,499",14,Black,m,Hoodies,
+Striped Tee Navy,TS-003,Rs. 699/-,26,Navy,L,t-shirts,"Navy striped tee, regular fit"
+Relaxed Jeans Washed,JN-002,2399,11,Washed,34,denim,Relaxed
+Baseball Cap Black,CP-001,399.00,100,Black,Free,Accessories,Adjustable cotton cap
+COTTON CREW TEE WHITE,TS-001,599,40,wht,L,T-Shirts,Soft 100% cotton crew neck tee
+Zip Hoodie Charcoal,HD-002,Rs. 1799/-,6,charcoal,x-large,Hoodies,Full zip hoodie
+Bomber Jacket Olive,JK-001,3499,5,Olive,L,Jackets,
+Slim Fit Jeans Indigo,JN-001,"Rs. 2,199",17,Indigo,,Denim,
+Graphic Tee Midnight,TS-002,Rs. 799,21,MIDNIGHT,med,T-Shirts,Printed graphic tee
+Oversized Hoodie,HD-003,"1,899",0,grey,L,hoodies,Oversized fit
+Fleece Hoodie Maroon,HD-004,1399,10,Maroon,M,Hoodies,Warm fleece hoodie
+Windcheater Black,JK-002,2999,3,Black,L,Jackets,
+Striped Tee Navy,TS-003,699.00,25,nvy,M,T-Shirts,"Navy striped tee, regular fit"
+Windcheater Black,JK-002,₹2999,3,BLK,x-large,jackets,

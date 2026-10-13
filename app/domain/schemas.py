@@ -243,3 +243,30 @@ class ImportCommitResponse(BaseModel):
     updated: int
     skipped: int
     errors: list[str] = Field(default_factory=list)
+
+
+# --- Catalog Health Schemas (PRD Pillar A, ADR-0007) ---
+class ScoreDistribution(BaseModel):
+    """Distribution of catalog products by health score range."""
+
+    excellent_90_100: int = 0
+    good_70_89: int = 0
+    fair_50_69: int = 0
+    poor_0_49: int = 0
+
+
+class IssueCount(BaseModel):
+    """Frequency count of an explainable catalog quality issue."""
+
+    issue: str
+    count: int
+
+
+class CatalogHealthSummary(BaseModel):
+    """Overall catalog health score summary returned by GET /api/health."""
+
+    average_score: float
+    total_products: int
+    score_distribution: ScoreDistribution
+    top_issues: list[IssueCount]
+    advice_summary: str | None = None

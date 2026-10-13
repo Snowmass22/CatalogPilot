@@ -170,3 +170,76 @@ class ProductListResponse(BaseModel):
     total: int
     offset: int
     limit: int
+
+
+# --- Import Schemas (Pillar A, Pillar B) ---
+class ColumnMapping(BaseModel):
+    """Mapping of CSV columns to PIM fields and attributes."""
+
+    sku_column: str = Field(..., description="Column containing unique product SKU or ID")
+    name_column: str = Field(..., description="Column containing product title or name")
+    description_column: str | None = Field(
+        default=None, description="Column containing description"
+    )
+    price_column: str = Field(..., description="Column containing product price")
+    stock_column: str = Field(..., description="Column containing available stock quantity")
+    category_column: str | None = Field(default=None, description="Column containing category name")
+    attribute_columns: dict[str, str] = Field(
+        default_factory=dict,
+        description="Maps raw CSV column name -> PIM attribute name (e.g. {'Clr': 'Color'})",
+    )
+
+
+class ImportPreviewRow(BaseModel):
+    """Normalized preview representation of a single CSV row."""
+
+    row_index: int
+    raw_data: dict[str, str]
+    sku: str
+    name: str
+    description: str | None = None
+    price: float = 0.0
+    stock: int = 0
+    category_name: str | None = None
+    attributes: dict[str, str] = Field(default_factory=dict)
+    issues: list[str] = Field(default_factory=list)
+
+
+class ImportPreviewResponse(BaseModel):
+    """Response returned by CSV import preview endpoint."""
+
+    mapping: ColumnMapping
+    attribute_normalizations: dict[str, dict[str, str]] = Field(default_factory=dict)
+    total_rows: int
+    preview_items: list[ImportPreviewRow]
+    duplicate_skus_in_file: list[str] = Field(default_factory=list)
+    existing_skus_in_db: list[str] = Field(default_factory=list)
+
+
+class ImportCommitItem(BaseModel):
+    """Item to be saved into catalog during import commit."""
+
+    sku: str
+    name: str
+    description: str | None = None
+    price: float = 0.0
+    stock: int = 0
+    category_name: str | None = None
+    status: str = "active"
+    attributes: dict[str, str] = Field(default_factory=dict)
+
+
+class ImportCommitRequest(BaseModel):
+    """Request payload to commit previewed import data."""
+
+    items: list[ImportCommitItem]
+    upsert: bool = Field(default=True, description="Update product if SKU already exists")
+
+
+class ImportCommitResponse(BaseModel):
+    """Summary of committed products."""
+
+    imported: int
+    updated: int
+    skipped: int
+    errors: list[str] = Field(default_factory=list)

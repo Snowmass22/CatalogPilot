@@ -113,9 +113,7 @@ class ProductService:
             count_statement = count_statement.where(col(Product.health_score) >= min_health_score)
 
         total_count = session.exec(count_statement).one() or 0
-        items = session.exec(
-            statement.order_by(col(Product.id)).offset(offset).limit(limit)
-        ).all()
+        items = session.exec(statement.order_by(col(Product.id)).offset(offset).limit(limit)).all()
 
         return items, int(total_count)
 

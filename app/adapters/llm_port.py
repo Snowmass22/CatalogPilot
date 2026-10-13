@@ -166,6 +166,8 @@ def get_llm_adapter() -> LLMPort:
         try:
             return GeminiAdapter(api_key=settings.GEMINI_API_KEY)
         except Exception as e:
-            logger.warning("Failed to create GeminiAdapter, falling back to FixtureLLMAdapter: %s", e)
+            logger.warning(
+                "Failed to create GeminiAdapter, falling back to FixtureLLMAdapter: %s", e
+            )
 
     return FixtureLLMAdapter()

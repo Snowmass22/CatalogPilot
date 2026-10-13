@@ -1,0 +1,109 @@
+<div class="space-y-4">
+  <!-- Search & Filter Bar -->
+  <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+    <div class="relative w-full sm:w-96">
+      <input type="text"
+             name="query"
+             value="{{ query or '' }}"
+             placeholder="Search by SKU or title..."
+             hx-get="/ui/partials/catalog"
+             hx-trigger="keyup changed delay:300ms, search"
+             hx-target="#catalog-content"
+             hx-swap="innerHTML"
+             class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3.5 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-sky-500">
+      <span class="absolute right-3 top-2.5 text-slate-500 text-xs">🔍</span>
+    </div>
+
+    <div class="flex items-center space-x-3 w-full sm:w-auto justify-between sm:justify-end">
+      <span class="text-xs text-slate-400">
+        Total: <strong class="text-white">{{ total_count }}</strong> products
+      </span>
+      <button hx-get="/ui/partials/catalog"
+              hx-target="#catalog-content"
+              hx-swap="innerHTML"
+              class="text-xs px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition">
+        ↻ Refresh
+      </button>
+    </div>
+  </div>
+
+  <!-- Products Table -->
+  <div class="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-sm">
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-slate-800 text-left text-sm">
+        <thead class="bg-slate-950/60 text-xs text-slate-400 uppercase tracking-wider">
+          <tr>
+            <th class="py-3 px-4 font-semibold">SKU</th>
+            <th class="py-3 px-4 font-semibold">Product Title</th>
+            <th class="py-3 px-4 font-semibold">Price</th>
+            <th class="py-3 px-4 font-semibold">Stock</th>
+            <th class="py-3 px-4 font-semibold">Category</th>
+            <th class="py-3 px-4 font-semibold">WooCommerce</th>
+            <th class="py-3 px-4 font-semibold">Health Score</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-800/60 text-slate-300">
+          {% for product in products %}
+          <tr class="hover:bg-slate-800/40 transition">
+            <td class="py-3 px-4 font-mono text-xs text-sky-400 font-medium">
+              {{ product.sku }}
+            </td>
+            <td class="py-3 px-4">
+              <div class="font-medium text-white">{{ product.name }}</div>
+              {% if product.description %}
+                <div class="text-xs text-slate-500 line-clamp-1 max-w-xs">{{ product.description }}</div>
+              {% endif %}
+            </td>
+            <td class="py-3 px-4 font-medium text-slate-200">
+              ${{ "%.2f"|format(product.price) }}
+            </td>
+            <td class="py-3 px-4">
+              {% if product.stock > 10 %}
+                <span class="text-emerald-400 font-medium">{{ product.stock }}</span>
+              {% elif product.stock > 0 %}
+                <span class="text-amber-400 font-medium">{{ product.stock }}</span>
+              {% else %}
+                <span class="text-rose-400 font-medium">Out of stock</span>
+              {% endif %}
+            </td>
+            <td class="py-3 px-4 text-xs text-slate-400">
+              {{ category_names.get(product.category_id, '—') }}
+            </td>
+            <td class="py-3 px-4">
+              {% if product.woo_id %}
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-emerald-950/60 text-emerald-400 border border-emerald-800/80">
+                  Synced #{{ product.woo_id }}
+                </span>
+              {% else %}
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-slate-800 text-slate-400 border border-slate-700">
+                  Unsynced
+                </span>
+              {% endif %}
+            </td>
+            <td class="py-3 px-4">
+              <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold
+                {% if product.health_score is not none and product.health_score >= 80 %}
+                  bg-emerald-950/70 text-emerald-400 border border-emerald-800
+                {% elif product.health_score is not none and product.health_score >= 50 %}
+                  bg-amber-950/70 text-amber-400 border border-amber-800
+                {% elif product.health_score is not none %}
+                  bg-rose-950/70 text-rose-400 border border-rose-800
+                {% else %}
+                  bg-slate-800 text-slate-400 border border-slate-700
+                {% endif %}">
+                {{ product.health_score if product.health_score is not none else '—' }} / 100
+              </span>
+            </td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="7" class="py-8 text-center text-slate-500 text-sm">
+              No products found matching your search.
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

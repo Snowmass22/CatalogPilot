@@ -1,0 +1,170 @@
+<div class="space-y-6">
+  <!-- Top Stats Row -->
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+    <!-- Big Health Score Card -->
+    <div class="md:col-span-2 bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-sm flex flex-col justify-between">
+      <div class="flex items-center justify-between">
+        <h3 class="text-sm font-semibold text-slate-400 uppercase tracking-wider">Catalog Health Score</h3>
+        <button hx-post="/ui/partials/dashboard/recompute"
+                hx-target="#dashboard-content"
+                hx-swap="innerHTML"
+                class="text-xs px-2.5 py-1 rounded-md bg-slate-800 hover:bg-slate-700 text-sky-400 border border-slate-700 transition flex items-center space-x-1">
+          <span>↻ Recompute</span>
+        </button>
+      </div>
+
+      <div class="my-4 flex items-center space-x-6">
+        <div class="relative flex items-center justify-center">
+          <!-- Circular Score Badge -->
+          <div class="w-24 h-24 rounded-full flex flex-col items-center justify-center border-4 shadow-inner
+            {% if summary.average_score >= 80 %}
+              border-emerald-500 bg-emerald-950/40 text-emerald-400
+            {% elif summary.average_score >= 50 %}
+              border-amber-500 bg-amber-950/40 text-amber-400
+            {% else %}
+              border-rose-500 bg-rose-950/40 text-rose-400
+            {% endif %}">
+            <span class="text-3xl font-extrabold tracking-tight">{{ summary.average_score }}</span>
+            <span class="text-[10px] uppercase font-semibold text-slate-400">/ 100</span>
+          </div>
+        </div>
+
+        <div>
+          <div class="text-lg font-bold text-white">
+            {% if summary.average_score >= 80 %}
+              <span class="text-emerald-400">Excellent Quality</span>
+            {% elif summary.average_score >= 60 %}
+              <span class="text-amber-400">Moderate Quality</span>
+            {% elif summary.average_score > 0 %}
+              <span class="text-rose-400">Needs Enrichment</span>
+            {% else %}
+              <span class="text-slate-400">No Data Scored</span>
+            {% endif %}
+          </div>
+          <p class="text-xs text-slate-400 mt-1 max-w-sm">
+            Completeness and quality evaluated based on required attributes, descriptions, images, pricing sanity, and SKU uniqueness.
+          </p>
+        </div>
+      </div>
+
+      <div class="text-xs text-slate-500 pt-3 border-t border-slate-800/80 flex items-center justify-between">
+        <span>Evaluated Products: <strong class="text-slate-300">{{ summary.total_products }}</strong></span>
+        <span>Target: &gt;85 for live WooCommerce sync</span>
+      </div>
+    </div>
+
+    <!-- Total Products Stat -->
+    <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-sm flex flex-col justify-between">
+      <div class="text-sm font-semibold text-slate-400 uppercase tracking-wider">Catalog Products</div>
+      <div class="my-3">
+        <div class="text-3xl font-extrabold text-white">{{ summary.total_products }}</div>
+        <div class="text-xs text-slate-400 mt-1">Available in local PIM</div>
+      </div>
+      <div class="text-xs text-emerald-400 flex items-center space-x-1">
+        <span>● Active & Ready for Sync</span>
+      </div>
+    </div>
+
+    <!-- Health Quality Tier -->
+    <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-sm flex flex-col justify-between">
+      <div class="text-sm font-semibold text-slate-400 uppercase tracking-wider">High Quality Items</div>
+      <div class="my-3">
+        <div class="text-3xl font-extrabold text-emerald-400">
+          {{ summary.score_distribution.excellent_90_100 + summary.score_distribution.good_70_89 }}
+        </div>
+        <div class="text-xs text-slate-400 mt-1">Products scoring &ge; 70</div>
+      </div>
+      <div class="text-xs text-slate-500">
+        {{ summary.score_distribution.poor_0_49 }} flagged as poor (&lt;50)
+      </div>
+    </div>
+  </div>
+
+  <!-- Score Distribution & Top Issues Row -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <!-- Distribution Progress Bars -->
+    <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-sm">
+      <h3 class="text-base font-bold text-white mb-4">Score Distribution</h3>
+      <div class="space-y-3">
+        <div>
+          <div class="flex justify-between text-xs font-medium mb-1">
+            <span class="text-emerald-400">Excellent (90–100)</span>
+            <span class="text-slate-300">{{ summary.score_distribution.excellent_90_100 }}</span>
+          </div>
+          <div class="w-full bg-slate-800 rounded-full h-2">
+            <div class="bg-emerald-500 h-2 rounded-full" style="width: {{ (summary.score_distribution.excellent_90_100 / (summary.total_products or 1) * 100) | round }}%"></div>
+          </div>
+        </div>
+
+        <div>
+          <div class="flex justify-between text-xs font-medium mb-1">
+            <span class="text-sky-400">Good (70–89)</span>
+            <span class="text-slate-300">{{ summary.score_distribution.good_70_89 }}</span>
+          </div>
+          <div class="w-full bg-slate-800 rounded-full h-2">
+            <div class="bg-sky-500 h-2 rounded-full" style="width: {{ (summary.score_distribution.good_70_89 / (summary.total_products or 1) * 100) | round }}%"></div>
+          </div>
+        </div>
+
+        <div>
+          <div class="flex justify-between text-xs font-medium mb-1">
+            <span class="text-amber-400">Fair (50–69)</span>
+            <span class="text-slate-300">{{ summary.score_distribution.fair_50_69 }}</span>
+          </div>
+          <div class="w-full bg-slate-800 rounded-full h-2">
+            <div class="bg-amber-500 h-2 rounded-full" style="width: {{ (summary.score_distribution.fair_50_69 / (summary.total_products or 1) * 100) | round }}%"></div>
+          </div>
+        </div>
+
+        <div>
+          <div class="flex justify-between text-xs font-medium mb-1">
+            <span class="text-rose-400">Poor (0–49)</span>
+            <span class="text-slate-300">{{ summary.score_distribution.poor_0_49 }}</span>
+          </div>
+          <div class="w-full bg-slate-800 rounded-full h-2">
+            <div class="bg-rose-500 h-2 rounded-full" style="width: {{ (summary.score_distribution.poor_0_49 / (summary.total_products or 1) * 100) | round }}%"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Top Issues Chips -->
+    <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-sm">
+      <h3 class="text-base font-bold text-white mb-2">Detected Issue Chips</h3>
+      <p class="text-xs text-slate-400 mb-4">Areas affecting product completeness across catalog</p>
+
+      {% if summary.top_issues %}
+        <div class="flex flex-wrap gap-2">
+          {% for item in summary.top_issues %}
+            <div class="px-3 py-1.5 rounded-lg text-xs font-medium bg-rose-950/40 border border-rose-900/60 text-rose-300 flex items-center space-x-2">
+              <span>⚠️ {{ item.issue }}</span>
+              <span class="px-1.5 py-0.5 rounded bg-rose-900/80 text-rose-200 text-[10px] font-bold">{{ item.count }}</span>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="p-6 text-center text-xs text-slate-500 border border-dashed border-slate-800 rounded-lg">
+          No quality issues detected. All products are in good health!
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Quality Agent Plain Language Advice -->
+  {% if summary.advice_summary %}
+  <div class="bg-gradient-to-r from-sky-950/40 to-indigo-950/40 border border-sky-800/60 rounded-xl p-5 shadow-sm">
+    <div class="flex items-start space-x-3">
+      <div class="text-xl">💡</div>
+      <div>
+        <h4 class="text-sm font-bold text-sky-300 flex items-center space-x-2">
+          <span>AI Quality Agent Recommendations</span>
+          <span class="text-[10px] px-1.5 py-0.5 rounded bg-sky-900 text-sky-200">QualityAgent</span>
+        </h4>
+        <p class="text-xs text-slate-300 mt-1 leading-relaxed">
+          {{ summary.advice_summary }}
+        </p>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+</div>

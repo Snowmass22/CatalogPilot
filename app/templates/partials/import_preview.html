@@ -1,0 +1,160 @@
+<div class="space-y-6">
+  <!-- AI Agent Analysis Overview -->
+  <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-sm">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-800 gap-3">
+      <div>
+        <h3 class="text-base font-bold text-white flex items-center space-x-2">
+          <span>AI Ingestion & Attribute Normalization</span>
+          <span class="text-xs px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800 font-mono">
+            {{ preview.total_rows }} Rows Processed
+          </span>
+        </h3>
+        <p class="text-xs text-slate-400 mt-1">
+          Analyzed {{ preview.total_rows }} rows • {{ preview.preview_items | length }} items parsed & ready to commit
+        </p>
+      </div>
+
+      <!-- Commit Action Button -->
+      <form hx-post="/ui/partials/import/commit"
+            hx-target="#import-preview-area"
+            hx-swap="innerHTML"
+            hx-indicator="#commit-spinner">
+        <input type="hidden" name="payload_json" value="{{ commit_payload_json | e }}">
+        <button type="submit"
+                class="px-5 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-sm font-semibold rounded-lg shadow-md hover:shadow-emerald-500/20 transition flex items-center space-x-2">
+          <span>✅ Confirm & Commit {{ preview.preview_items | length }} Products</span>
+        </button>
+      </form>
+    </div>
+
+    <div id="commit-spinner" class="htmx-indicator mt-3 text-xs text-emerald-400 flex items-center space-x-2">
+      <svg class="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+      </svg>
+      <span>Committing products to PIM database and calculating health scores...</span>
+    </div>
+
+    <!-- Duplicate SKUs Warning -->
+    {% if preview.duplicate_skus_in_file %}
+    <div class="mt-4 p-3 bg-amber-950/40 border border-amber-900/60 rounded-lg text-xs text-amber-300 flex items-start space-x-2">
+      <span>⚠️</span>
+      <div>
+        <strong>Duplicate SKUs detected in CSV:</strong>
+        <span class="font-mono text-amber-200">{{ preview.duplicate_skus_in_file | join(', ') }}</span>
+        <span class="text-slate-400 block mt-0.5">Upsert mode will safely update existing records without corrupting store data.</span>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Column Mapping & Attribute Normalizations Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-6">
+      <!-- Inferred Field Mapping -->
+      <div class="bg-slate-950/60 border border-slate-800 rounded-lg p-4">
+        <h4 class="text-xs font-semibold uppercase text-slate-400 mb-3 tracking-wider">Inferred Column Mappings</h4>
+        <div class="space-y-1.5 text-xs">
+          <div class="flex justify-between py-1 border-b border-slate-900">
+            <span class="text-slate-400">SKU (Unique Identifier):</span>
+            <span class="font-mono text-sky-400 font-semibold">{{ preview.mapping.sku_column }}</span>
+          </div>
+          <div class="flex justify-between py-1 border-b border-slate-900">
+            <span class="text-slate-400">Title / Name:</span>
+            <span class="font-mono text-sky-400 font-semibold">{{ preview.mapping.name_column }}</span>
+          </div>
+          <div class="flex justify-between py-1 border-b border-slate-900">
+            <span class="text-slate-400">Price (Cleaned Number):</span>
+            <span class="font-mono text-emerald-400 font-semibold">{{ preview.mapping.price_column }}</span>
+          </div>
+          <div class="flex justify-between py-1 border-b border-slate-900">
+            <span class="text-slate-400">Stock / Quantity:</span>
+            <span class="font-mono text-emerald-400 font-semibold">{{ preview.mapping.stock_column }}</span>
+          </div>
+          <div class="flex justify-between py-1 border-b border-slate-900">
+            <span class="text-slate-400">Category:</span>
+            <span class="font-mono text-slate-300">{{ preview.mapping.category_column or 'None' }}</span>
+          </div>
+          {% for csv_h, pim_attr in preview.mapping.attribute_columns.items() %}
+          <div class="flex justify-between py-1 border-b border-slate-900">
+            <span class="text-slate-400">Attribute "{{ csv_h }}":</span>
+            <span class="font-mono text-purple-400">➔ {{ pim_attr }}</span>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Before / After Normalizations -->
+      <div class="bg-slate-950/60 border border-slate-800 rounded-lg p-4">
+        <h4 class="text-xs font-semibold uppercase text-slate-400 mb-3 tracking-wider">Before / After Normalizations</h4>
+        <div class="space-y-2 max-h-56 overflow-y-auto pr-1">
+          {% for attr_name, norm_map in preview.attribute_normalizations.items() %}
+            <div class="text-[11px] font-semibold text-slate-300 mb-1">{{ attr_name }}:</div>
+            <div class="flex flex-wrap gap-1.5 mb-2">
+              {% for raw_val, clean_val in norm_map.items() %}
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] bg-slate-800 text-slate-300 border border-slate-700">
+                  <span class="font-mono text-rose-400">{{ raw_val }}</span>
+                  <span class="mx-1 text-slate-500">➔</span>
+                  <span class="font-mono text-emerald-400 font-bold">{{ clean_val }}</span>
+                </span>
+              {% endfor %}
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Parsed Preview Sample Rows Table -->
+  <div class="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-sm">
+    <div class="px-6 py-4 border-b border-slate-800">
+      <h3 class="text-sm font-bold text-white">Parsed Preview Sample (First 10 Items)</h3>
+      <p class="text-xs text-slate-400">Review mapped fields and cleaned attribute values before confirming import.</p>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-slate-800 text-left text-xs">
+        <thead class="bg-slate-950/60 text-slate-400 uppercase tracking-wider">
+          <tr>
+            <th class="py-2.5 px-4 font-semibold">SKU</th>
+            <th class="py-2.5 px-4 font-semibold">Name</th>
+            <th class="py-2.5 px-4 font-semibold">Cleaned Price</th>
+            <th class="py-2.5 px-4 font-semibold">Stock</th>
+            <th class="py-2.5 px-4 font-semibold">Normalized Attributes</th>
+            <th class="py-2.5 px-4 font-semibold">Quality Flags</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-800/60 text-slate-300">
+          {% for item in preview.preview_items[:10] %}
+          <tr class="hover:bg-slate-800/40">
+            <td class="py-2.5 px-4 font-mono font-medium text-sky-400">{{ item.sku }}</td>
+            <td class="py-2.5 px-4 text-white font-medium">{{ item.name }}</td>
+            <td class="py-2.5 px-4 font-medium text-emerald-400">${{ "%.2f"|format(item.price) }}</td>
+            <td class="py-2.5 px-4">{{ item.stock }}</td>
+            <td class="py-2.5 px-4">
+              <div class="flex flex-wrap gap-1">
+                {% for k, v in item.attributes.items() %}
+                  <span class="px-1.5 py-0.5 rounded text-[10px] bg-slate-800 text-slate-300 border border-slate-700 font-mono">
+                    {{ k }}: <strong class="text-emerald-300">{{ v }}</strong>
+                  </span>
+                {% endfor %}
+              </div>
+            </td>
+            <td class="py-2.5 px-4">
+              {% if item.issues %}
+                <div class="flex flex-wrap gap-1">
+                  {% for issue in item.issues %}
+                    <span class="px-1.5 py-0.5 rounded text-[10px] bg-amber-950/60 text-amber-300 border border-amber-900">
+                      {{ issue }}
+                    </span>
+                  {% endfor %}
+                </div>
+              {% else %}
+                <span class="text-[11px] text-emerald-400">✓ Clean</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

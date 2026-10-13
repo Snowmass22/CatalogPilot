@@ -8,7 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from app.api.router import api_router
-from app.config import settings
+from app.api.ui import ui_router
 from app.db.session import init_db
 from app.domain.exceptions import (
     DuplicateAttributeNameError,
@@ -97,18 +97,6 @@ async def parent_category_cycle_handler(
     )
 
 
-# Include API router
+# Include Routers
+app.include_router(ui_router)
 app.include_router(api_router)
-
-
-@app.get("/", tags=["Root"])
-def root() -> dict[str, str]:
-    """Root endpoint providing service information."""
-    return {
-        "name": "CatalogPilot",
-        "description": "Agentic PIM for WooCommerce",
-        "version": "0.1.0",
-        "docs": "/docs",
-        "health": "/api/health",
-        "env": settings.ENV,
-    }

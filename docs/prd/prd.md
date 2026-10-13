@@ -164,7 +164,7 @@ Multi-user auth and roles, multi-currency, image hosting or CDN, order managemen
                    │              └─ FixtureLLMAdapter          │
                    └───────────────┬────────────────────────────┘
                                    ▼
-                              SQLite (SQLModel)
+                               SQLite (SQLModel)
 ```
 
 **Suggested folder structure**

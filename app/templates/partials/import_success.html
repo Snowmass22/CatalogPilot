@@ -1,0 +1,25 @@
+<div class="bg-emerald-950/40 border border-emerald-800/80 rounded-xl p-6 text-center space-y-4">
+  <div class="w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 mx-auto flex items-center justify-center text-2xl font-bold">
+    ✓
+  </div>
+  <div>
+    <h3 class="text-lg font-bold text-white">Import Committed Successfully!</h3>
+    <p class="text-sm text-emerald-300 mt-1">
+      <strong>{{ result.imported }}</strong> products imported / updated into local catalog.
+    </p>
+    {% if result.errors %}
+      <p class="text-xs text-rose-400 mt-1">{{ result.errors | length }} items encountered validation errors.</p>
+    {% endif %}
+  </div>
+
+  <div class="flex justify-center space-x-3 pt-2">
+    <button onclick="switchTab('catalog')"
+            class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white text-xs font-semibold rounded-lg border border-slate-700 transition">
+      View in Catalog Tab ➔
+    </button>
+    <button onclick="switchTab('dashboard')"
+            class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold rounded-lg shadow-sm transition">
+      Check Updated Health Score ➔
+    </button>
+  </div>
+</div>

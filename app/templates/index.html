@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CatalogPilot — Agentic PIM for WooCommerce</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- HTMX CDN -->
+  <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f0f9ff',
+              100: '#e0f2fe',
+              500: '#0284c7',
+              600: '#0369a1',
+              700: '#075985',
+              800: '#0c4a6e',
+              900: '#082f49',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .htmx-indicator { display: none; }
+    .htmx-request .htmx-indicator { display: inline-block; }
+    .htmx-request.htmx-indicator { display: inline-block; }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col antialiased selection:bg-sky-500 selection:text-white">
+
+  <!-- Top Navbar -->
+  <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="h-9 w-9 rounded-lg bg-gradient-to-tr from-sky-500 to-indigo-600 flex items-center justify-center font-bold text-white shadow-lg shadow-sky-500/20">
+          CP
+        </div>
+        <div>
+          <div class="flex items-center space-x-2">
+            <span class="font-bold text-lg tracking-tight text-white">CatalogPilot</span>
+            <span class="text-xs px-2 py-0.5 rounded-full font-medium bg-sky-950 text-sky-400 border border-sky-800">Agentic PIM</span>
+          </div>
+          <p class="text-xs text-slate-400">Intelligent Catalog Enrichment & Safe Sync</p>
+        </div>
+      </div>
+
+      <div class="flex items-center space-x-3">
+        <div class="flex items-center space-x-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-950/60 text-emerald-400 border border-emerald-800/80">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span>Store: {{ store_mode | upper }}</span>
+        </div>
+        <a href="/docs" target="_blank" class="text-xs text-slate-400 hover:text-slate-200 px-2.5 py-1 rounded border border-slate-800 hover:border-slate-700 transition">
+          Swagger API ↗
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Navigation Tabs -->
+  <div class="border-b border-slate-800 bg-slate-900">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <nav class="flex space-x-1 py-2" aria-label="Tabs">
+        <button id="tab-btn-dashboard" onclick="switchTab('dashboard')"
+                class="tab-btn px-4 py-2 text-sm font-medium rounded-lg text-white bg-slate-800 border-b-2 border-sky-500 transition flex items-center space-x-2">
+          <span>📊 Dashboard</span>
+        </button>
+        <button id="tab-btn-catalog" onclick="switchTab('catalog')"
+                class="tab-btn px-4 py-2 text-sm font-medium rounded-lg text-slate-400 hover:text-slate-200 border-b-2 border-transparent transition flex items-center space-x-2">
+          <span>📦 Catalog</span>
+        </button>
+        <button id="tab-btn-import" onclick="switchTab('import')"
+                class="tab-btn px-4 py-2 text-sm font-medium rounded-lg text-slate-400 hover:text-slate-200 border-b-2 border-transparent transition flex items-center space-x-2">
+          <span>📥 AI Import</span>
+        </button>
+        <button id="tab-btn-sync" onclick="switchTab('sync')"
+                class="tab-btn px-4 py-2 text-sm font-medium rounded-lg text-slate-400 hover:text-slate-200 border-b-2 border-transparent transition flex items-center space-x-2">
+          <span>🔄 Sync & Rollback</span>
+        </button>
+      </nav>
+    </div>
+  </div>
+
+  <!-- Main Content Area -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 w-full">
+
+    <!-- Global Toast / Alert Banner -->
+    <div id="toast-container" class="mb-4"></div>
+
+    <!-- TAB 1: DASHBOARD -->
+    <section id="tab-dashboard" class="tab-pane">
+      <div id="dashboard-content"
+           hx-get="/ui/partials/dashboard"
+           hx-trigger="load, refreshDashboard from:body"
+           hx-swap="innerHTML">
+        <div class="flex items-center justify-center p-12 text-slate-400">
+          <svg class="animate-spin h-6 w-6 mr-3 text-sky-500" viewBox="0 0 24 24" fill="none">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+          </svg>
+          Loading Catalog Health Analytics...
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 2: CATALOG -->
+    <section id="tab-catalog" class="tab-pane hidden">
+      <div id="catalog-content"
+           hx-get="/ui/partials/catalog"
+           hx-trigger="load, refreshCatalog from:body"
+           hx-swap="innerHTML">
+        <div class="flex items-center justify-center p-12 text-slate-400">
+          <svg class="animate-spin h-6 w-6 mr-3 text-sky-500" viewBox="0 0 24 24" fill="none">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+          </svg>
+          Loading Product Catalog...
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: IMPORT -->
+    <section id="tab-import" class="tab-pane hidden">
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-sm mb-6">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-slate-800">
+          <div>
+            <h2 class="text-xl font-bold text-white flex items-center space-x-2">
+              <span>Agentic CSV Ingestion</span>
+              <span class="text-xs px-2 py-0.5 rounded bg-sky-950 text-sky-300 border border-sky-800 font-mono">MapperAgent</span>
+            </h2>
+            <p class="text-sm text-slate-400 mt-1">
+              Upload any raw supplier CSV. The AI mapper infers column mappings and normalizes dirty attributes.
+            </p>
+          </div>
+
+          <!-- Quick Action: Load Sample CSV -->
+          <div>
+            <button hx-post="/ui/partials/import/preview?use_sample=true"
+                    hx-target="#import-preview-area"
+                    hx-swap="innerHTML"
+                    hx-indicator="#import-spinner"
+                    class="px-4 py-2 bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 text-white text-sm font-medium rounded-lg shadow-md hover:shadow-sky-500/20 transition flex items-center space-x-2">
+              <span>⚡ Load Sample Messy CSV</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- File Upload Form -->
+        <form hx-post="/ui/partials/import/preview"
+              hx-target="#import-preview-area"
+              hx-swap="innerHTML"
+              hx-encoding="multipart/form-data"
+              hx-indicator="#import-spinner"
+              class="mt-6">
+          <div class="flex flex-col sm:flex-row items-center gap-3">
+            <input type="file" name="file" accept=".csv" required
+                   class="block w-full text-sm text-slate-400 file:mr-4 file:py-2.5 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-slate-800 file:text-sky-400 hover:file:bg-slate-700 cursor-pointer border border-slate-800 rounded-lg p-1 bg-slate-950">
+            <button type="submit"
+                    class="w-full sm:w-auto px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-white text-sm font-medium rounded-lg border border-slate-700 transition whitespace-nowrap flex items-center justify-center space-x-2">
+              <span>Analyze & Preview</span>
+            </button>
+          </div>
+          <div id="import-spinner" class="htmx-indicator mt-3 text-xs text-sky-400 flex items-center space-x-2">
+            <svg class="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+            </svg>
+            <span>Analyzing headers and inferring normalizations...</span>
+          </div>
+        </form>
+      </div>
+
+      <!-- Preview Output Container -->
+      <div id="import-preview-area">
+        <div class="bg-slate-900/50 border border-dashed border-slate-800 rounded-xl p-12 text-center text-slate-500">
+          <svg class="w-12 h-12 mx-auto mb-3 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+          </svg>
+          <p class="text-sm font-medium">No CSV preview generated yet.</p>
+          <p class="text-xs text-slate-500 mt-1">Upload a CSV or click "Load Sample Messy CSV" above to see the AI agent in action.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 4: SYNC & ROLLBACK -->
+    <section id="tab-sync" class="tab-pane hidden">
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-sm mb-6">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <h2 class="text-xl font-bold text-white flex items-center space-x-2">
+              <span>WooCommerce Sync Engine</span>
+              <span class="text-xs px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800 font-mono">Idempotent by SKU</span>
+            </h2>
+            <p class="text-sm text-slate-400 mt-1">
+              Dry-run plan inspects changes and field diffs. Approval gates live writes, saving snapshots for 1-click rollback.
+            </p>
+          </div>
+
+          <div>
+            <button hx-post="/ui/partials/sync/plan"
+                    hx-target="#sync-plan-area"
+                    hx-swap="innerHTML"
+                    hx-indicator="#sync-spinner"
+                    class="px-5 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-sm font-medium rounded-lg shadow-md hover:shadow-emerald-500/20 transition flex items-center space-x-2">
+              <span>⚡ Generate Sync Plan</span>
+            </button>
+          </div>
+        </div>
+        <div id="sync-spinner" class="htmx-indicator mt-3 text-xs text-emerald-400 flex items-center space-x-2">
+          <svg class="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+          </svg>
+          <span>Comparing catalog against store state & computing field-level diffs...</span>
+        </div>
+      </div>
+
+      <!-- Sync Plan & Diff Area -->
+      <div id="sync-plan-area" class="mb-8">
+        <div class="bg-slate-900/50 border border-dashed border-slate-800 rounded-xl p-10 text-center text-slate-500">
+          <p class="text-sm font-medium">No active sync plan generated yet.</p>
+          <p class="text-xs text-slate-500 mt-1">Click "Generate Sync Plan" to build a dry-run diff against WooCommerce.</p>
+        </div>
+      </div>
+
+      <!-- Sync Runs History (Time Machine) -->
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-sm">
+        <div class="flex items-center justify-between pb-4 border-b border-slate-800 mb-4">
+          <div>
+            <h3 class="text-lg font-bold text-white flex items-center space-x-2">
+              <span>Sync Time Machine</span>
+              <span class="text-xs px-2 py-0.5 rounded bg-purple-950 text-purple-300 border border-purple-800">Snapshot Rollback</span>
+            </h3>
+            <p class="text-xs text-slate-400 mt-0.5">Every executed run saves pre-write snapshots to safely restore store state.</p>
+          </div>
+          <button hx-get="/ui/partials/sync/runs"
+                  hx-target="#sync-runs-container"
+                  hx-swap="innerHTML"
+                  class="text-xs px-3 py-1.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition">
+            ↻ Refresh History
+          </button>
+        </div>
+
+        <div id="sync-runs-container"
+             hx-get="/ui/partials/sync/runs"
+             hx-trigger="load, refreshRuns from:body"
+             hx-swap="innerHTML">
+          <div class="p-4 text-center text-xs text-slate-500">Loading sync history...</div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-slate-900 py-4 text-center text-xs text-slate-600">
+    CatalogPilot • Agentic PIM for WooCommerce • Hackathon Edition
+  </footer>
+
+  <!-- Tab Switching & Event Script -->
+  <script>
+    function switchTab(tabId) {
+      const tabs = ['dashboard', 'catalog', 'import', 'sync'];
+      tabs.forEach(t => {
+        const pane = document.getElementById('tab-' + t);
+        const btn = document.getElementById('tab-btn-' + t);
+        if (t === tabId) {
+          pane.classList.remove('hidden');
+          btn.classList.add('bg-slate-800', 'text-white', 'border-sky-500');
+          btn.classList.remove('text-slate-400', 'border-transparent');
+        } else {
+          pane.classList.add('hidden');
+          btn.classList.remove('bg-slate-800', 'text-white', 'border-sky-500');
+          btn.classList.add('text-slate-400', 'border-transparent');
+        }
+      });
+    }
+
+    // HTMX Trigger Listeners for reactive updates
+    document.body.addEventListener('refreshDashboard', function() {
+      htmx.trigger('#dashboard-content', 'refreshDashboard');
+    });
+    document.body.addEventListener('refreshCatalog', function() {
+      htmx.trigger('#catalog-content', 'refreshCatalog');
+    });
+    document.body.addEventListener('refreshRuns', function() {
+      htmx.trigger('#sync-runs-container', 'refreshRuns');
+    });
+  </script>
+</body>
+</html>

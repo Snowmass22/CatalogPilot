@@ -1,0 +1,120 @@
+<div class="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-sm space-y-4 p-6">
+  <!-- Plan Header & Action Gate -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-800 gap-4">
+    <div>
+      <div class="flex items-center space-x-2">
+        <h3 class="text-base font-bold text-white">Sync Plan #{{ plan.id }}</h3>
+        <span class="text-xs px-2 py-0.5 rounded font-mono
+          {% if plan.status == 'approved' %}
+            bg-emerald-950 text-emerald-300 border border-emerald-800
+          {% elif plan.status == 'executed' %}
+            bg-purple-950 text-purple-300 border border-purple-800
+          {% else %}
+            bg-sky-950 text-sky-300 border border-sky-800
+          {% endif %}">
+          {{ plan.status | upper }}
+        </span>
+      </div>
+      <p class="text-xs text-slate-400 mt-1">
+        Generated dry-run plan. Human approval required before writing to WooCommerce.
+      </p>
+    </div>
+
+    <!-- Approval & Execution Form -->
+    {% if plan.status != 'executed' %}
+    <form hx-post="/ui/partials/sync/{{ plan.id }}/execute"
+          hx-target="#sync-plan-area"
+          hx-swap="innerHTML"
+          hx-indicator="#exec-spinner">
+      <button type="submit"
+              class="px-5 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-sm font-semibold rounded-lg shadow-md hover:shadow-emerald-500/20 transition flex items-center space-x-2">
+        <span>✅ Approve & Execute Sync Plan</span>
+      </button>
+    </form>
+    {% else %}
+    <div class="px-4 py-2 rounded-lg bg-emerald-950/60 text-emerald-300 border border-emerald-800 text-xs font-semibold">
+      ✓ Plan Executed Successfully
+    </div>
+    {% endif %}
+  </div>
+
+  <div id="exec-spinner" class="htmx-indicator text-xs text-emerald-400 flex items-center space-x-2">
+    <svg class="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
+      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+    </svg>
+    <span>Writing batch to store, creating Time Machine snapshots...</span>
+  </div>
+
+  <!-- Summary Metric Chips -->
+  <div class="grid grid-cols-3 gap-3">
+    <div class="bg-slate-950/60 border border-emerald-900/40 rounded-lg p-3 text-center">
+      <div class="text-xs text-emerald-400 font-semibold uppercase tracking-wider">Create</div>
+      <div class="text-2xl font-extrabold text-emerald-300 mt-1">{{ summary.get('create', 0) }}</div>
+      <div class="text-[10px] text-slate-500">New products to add</div>
+    </div>
+    <div class="bg-slate-950/60 border border-amber-900/40 rounded-lg p-3 text-center">
+      <div class="text-xs text-amber-400 font-semibold uppercase tracking-wider">Update</div>
+      <div class="text-2xl font-extrabold text-amber-300 mt-1">{{ summary.get('update', 0) }}</div>
+      <div class="text-[10px] text-slate-500">Existing with field diffs</div>
+    </div>
+    <div class="bg-slate-950/60 border border-slate-800 rounded-lg p-3 text-center">
+      <div class="text-xs text-slate-400 font-semibold uppercase tracking-wider">No Change</div>
+      <div class="text-2xl font-extrabold text-slate-300 mt-1">{{ summary.get('no_change', 0) }}</div>
+      <div class="text-[10px] text-slate-500">Already in sync (skipped)</div>
+    </div>
+  </div>
+
+  <!-- Diff Items Table -->
+  <div class="border border-slate-800 rounded-lg overflow-hidden">
+    <table class="min-w-full divide-y divide-slate-800 text-left text-xs">
+      <thead class="bg-slate-950/70 text-slate-400 uppercase tracking-wider">
+        <tr>
+          <th class="py-2.5 px-4 font-semibold">SKU / Product</th>
+          <th class="py-2.5 px-4 font-semibold">Action</th>
+          <th class="py-2.5 px-4 font-semibold">Field-Level Diffs (Before ➔ After)</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-slate-800/60 text-slate-300">
+        {% for item in items_details %}
+        <tr class="hover:bg-slate-800/40">
+          <td class="py-2.5 px-4 font-mono font-medium text-sky-400">
+            {{ item.sku }}
+            <span class="block text-[11px] text-slate-400 font-sans">{{ item.name }}</span>
+          </td>
+          <td class="py-2.5 px-4">
+            <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold uppercase
+              {% if item.action == 'create' %}
+                bg-emerald-950/70 text-emerald-400 border border-emerald-800
+              {% elif item.action == 'update' %}
+                bg-amber-950/70 text-amber-400 border border-amber-800
+              {% else %}
+                bg-slate-800 text-slate-400 border border-slate-700
+              {% endif %}">
+              {{ item.action }}
+            </span>
+          </td>
+          <td class="py-2.5 px-4">
+            {% if item.diff and item.diff != {} %}
+              <div class="space-y-1">
+                {% for field, change in item.diff.items() %}
+                  <div class="font-mono text-[11px] text-slate-300">
+                    <span class="text-slate-400 font-semibold">{{ field }}:</span>
+                    <span class="px-1.5 py-0.2 rounded bg-rose-950 text-rose-300 border border-rose-900">{{ change.before }}</span>
+                    <span class="text-slate-500 mx-1">➔</span>
+                    <span class="px-1.5 py-0.2 rounded bg-emerald-950 text-emerald-300 border border-emerald-900 font-bold">{{ change.after }}</span>
+                  </div>
+                {% endfor %}
+              </div>
+            {% elif item.action == 'create' %}
+              <span class="text-slate-400 italic">Entire product record will be created in store</span>
+            {% else %}
+              <span class="text-slate-500 italic">Exact match with WooCommerce state (no writes)</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
